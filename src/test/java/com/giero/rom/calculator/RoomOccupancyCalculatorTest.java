@@ -1,5 +1,6 @@
 package com.giero.rom.calculator;
 
+import com.giero.rom.configuration.ApplicationProperties;
 import com.giero.rom.dto.CalculateOccupancyRequestDto;
 import com.giero.rom.dto.CalculateOccupancyResultDto;
 import org.junit.jupiter.api.Test;
@@ -11,8 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RoomOccupancyCalculatorTest {
 
-    private final RoomOccupancyCalculator calculator = new RoomOccupancyCalculator();
+    private final ApplicationProperties applicationProperties = new ApplicationProperties(100);
     private final List<Integer> customerOffers = Arrays.asList(23, 45, 155, 374, 22, 99, 100, 101, 115, 209);
+    private final RoomOccupancyCalculator calculator = new RoomOccupancyCalculator(applicationProperties);
 
     @Test
     public void calculateOccupancy_shouldCorrectlyOptimizeRoomDistribution_scenario1() {
