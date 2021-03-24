@@ -6,8 +6,6 @@ import com.giero.rom.dto.CalculateOccupancyResultDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 import static java.util.Comparator.reverseOrder;
 import static java.util.stream.Collectors.toList;
 
@@ -22,29 +20,29 @@ public class RoomOccupancyCalculator {
     }
 
     public CalculateOccupancyResultDto calculateOccupancy(CalculateOccupancyRequestDto request) {
-        List<Integer> premiumRoomsDistributionList = request.customerOffers().stream()
+        var premiumRoomsDistributionList = request.getCustomerOffers().stream()
                 .filter(offer -> offer >= applicationProperties.getPremiumRoomThreshold())
                 .sorted(reverseOrder())
-                .limit(request.availablePremiumRooms())
+                .limit(request.getAvailablePremiumRooms())
                 .collect(toList());
 
-        int remainingPremiumRooms = request.availablePremiumRooms() - premiumRoomsDistributionList.size();
-        int economyRoomsDeficiency = (request.customerOffers().size() - premiumRoomsDistributionList.size()) - request.availableEconomyRooms();
-        boolean possibilityToUpgrade = remainingPremiumRooms > 0 && economyRoomsDeficiency > 0;
+        var remainingPremiumRooms = request.getAvailablePremiumRooms() - premiumRoomsDistributionList.size();
+        var economyRoomsDeficiency = (request.getCustomerOffers().size() - premiumRoomsDistributionList.size()) - request.getAvailableEconomyRooms();
+        var possibilityToUpgrade = remainingPremiumRooms > 0 && economyRoomsDeficiency > 0;
 
         if (possibilityToUpgrade) {
-            premiumRoomsDistributionList.addAll(request.customerOffers().stream()
+            premiumRoomsDistributionList.addAll(request.getCustomerOffers().stream()
                     .filter(offer -> offer < applicationProperties.getPremiumRoomThreshold())
                     .sorted(reverseOrder())
                     .limit(Math.min(economyRoomsDeficiency, remainingPremiumRooms))
                     .collect(toList()));
         }
 
-        List<Integer> economyRoomsDistributionList = request.customerOffers().stream()
+        var economyRoomsDistributionList = request.getCustomerOffers().stream()
                 .filter(offer -> offer < applicationProperties.getPremiumRoomThreshold())
                 .sorted(reverseOrder())
                 .skip(possibilityToUpgrade ? Math.min(economyRoomsDeficiency, remainingPremiumRooms) : 0)
-                .limit(request.availableEconomyRooms())
+                .limit(request.getAvailableEconomyRooms())
                 .collect(toList());
 
         return new CalculateOccupancyResultDto(
