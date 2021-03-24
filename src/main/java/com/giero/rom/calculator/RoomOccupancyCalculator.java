@@ -23,7 +23,7 @@ public class RoomOccupancyCalculator {
 
     public CalculateOccupancyResultDto calculateOccupancy(CalculateOccupancyRequestDto request) {
         List<Integer> premiumRoomsDistributionList = request.customerOffers().stream()
-                .filter(offer -> offer >= applicationProperties.premiumRoomThreshold())
+                .filter(offer -> offer >= applicationProperties.getPremiumRoomThreshold())
                 .sorted(reverseOrder())
                 .limit(request.availablePremiumRooms())
                 .collect(toList());
@@ -34,14 +34,14 @@ public class RoomOccupancyCalculator {
 
         if (possibilityToUpgrade) {
             premiumRoomsDistributionList.addAll(request.customerOffers().stream()
-                    .filter(offer -> offer < applicationProperties.premiumRoomThreshold())
+                    .filter(offer -> offer < applicationProperties.getPremiumRoomThreshold())
                     .sorted(reverseOrder())
                     .limit(Math.min(economyRoomsDeficiency, remainingPremiumRooms))
                     .collect(toList()));
         }
 
         List<Integer> economyRoomsDistributionList = request.customerOffers().stream()
-                .filter(offer -> offer < applicationProperties.premiumRoomThreshold())
+                .filter(offer -> offer < applicationProperties.getPremiumRoomThreshold())
                 .sorted(reverseOrder())
                 .skip(possibilityToUpgrade ? Math.min(economyRoomsDeficiency, remainingPremiumRooms) : 0)
                 .limit(request.availableEconomyRooms())
