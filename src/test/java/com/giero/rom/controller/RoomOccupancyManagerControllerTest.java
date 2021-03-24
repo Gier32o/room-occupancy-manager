@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static io.restassured.RestAssured.with;
+import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -96,5 +97,60 @@ class RoomOccupancyManagerControllerTest {
         //@formatter:on
     }
 
+    @Test
+    public void calculateOccupancy_shouldResultInBadRequest_whenAvailableEconomyRoomsIsANegativeNumber() {
+        //@formatter:off
+        with().body(new CalculateOccupancyRequestDto(-1,1, customerOffers))
+                .contentType("application/json")
+                .given()
+                    .port(port)
+                .when()
+                    .post("/room-management/calculate-occupancy")
+                .then()
+                    .statusCode(400);
+        //@formatter:on
+    }
+
+    @Test
+    public void calculateOccupancy_shouldResultInBadRequest_whenAvailablePremiumRoomsIsANegativeNumber() {
+        //@formatter:off
+        with().body(new CalculateOccupancyRequestDto(1,-1, customerOffers))
+                .contentType("application/json")
+                .given()
+                    .port(port)
+                .when()
+                    .post("/room-management/calculate-occupancy")
+                .then()
+                    .statusCode(400);
+        //@formatter:on
+    }
+
+    @Test
+    public void calculateOccupancy_shouldResultInBadRequest_whenAtLeastOneCustomerOfferIsNotAPositiveNumber() {
+        //@formatter:off
+        with().body(new CalculateOccupancyRequestDto(1,1, Arrays.asList(1, 0)))
+                .contentType("application/json")
+                .given()
+                    .port(port)
+                .when()
+                    .post("/room-management/calculate-occupancy")
+                .then()
+                    .statusCode(400);
+        //@formatter:on
+    }
+
+    @Test
+    public void calculateOccupancy_shouldResultInBadRequest_whenCustomerOffersIsEmpty() {
+        //@formatter:off
+        with().body(new CalculateOccupancyRequestDto(1,1, emptyList()))
+                .contentType("application/json")
+                .given()
+                    .port(port)
+                .when()
+                    .post("/room-management/calculate-occupancy")
+                .then()
+                    .statusCode(400);
+        //@formatter:on
+    }
 
 }

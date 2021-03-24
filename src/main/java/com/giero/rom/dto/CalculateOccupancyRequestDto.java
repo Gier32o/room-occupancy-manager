@@ -1,12 +1,19 @@
 package com.giero.rom.dto;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import java.util.Collection;
 import java.util.Objects;
 
 public class CalculateOccupancyRequestDto {
+    @Min(0)
     private final int availableEconomyRooms;
+
+    @Min(0)
     private final int availablePremiumRooms;
-    private final Collection<Integer> customerOffers;
+
+    @NotEmpty
+    private final Collection<@Min(1) Integer> customerOffers;
 
     public CalculateOccupancyRequestDto(int availableEconomyRooms, int availablePremiumRooms, Collection<Integer> customerOffers) {
         this.availableEconomyRooms = availableEconomyRooms;
